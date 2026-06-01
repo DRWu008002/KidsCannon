@@ -355,6 +355,9 @@ window.addEventListener("keyup", (event) => {
 
 window.addEventListener("blur", () => {
   keys.clear();
+  touchDirections.clear();
+  turnLeftButton.classList.remove("is-pressed");
+  turnRightButton.classList.remove("is-pressed");
 });
 
 function bindHoldButton(button, key) {
