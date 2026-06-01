@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kids Cannon - Developed by DRW</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="game-header">
+        <h1>🎯 Kids Cannon</h1>
+        <p>Developed by DRW</p>
+      </header>
+
+      <section class="game-card" aria-label="Kids Cannon game">
+        <canvas id="gameCanvas" width="960" height="640">
+          您的瀏覽器不支援 HTML5 Canvas。
+        </canvas>
+        <div class="controls" aria-label="遊戲操作說明">
+          <span>⬅️ ➡️ 旋轉砲台</span>
+          <span>空白鍵 發射彩色砲彈</span>
+        </div>
+        <div class="touch-controls" aria-label="平板觸控操作">
+          <button class="touch-button turn-button" id="turnLeft" type="button">
+            <span class="button-icon">⬅️</span>
+            <span>左轉</span>
+          </button>
+          <button class="touch-button fire-button" id="fireButton" type="button">
+            <span class="button-icon">🚀</span>
+            <span>發射</span>
+          </button>
+          <button class="touch-button turn-button" id="turnRight" type="button">
+            <span class="button-icon">➡️</span>
+            <span>右轉</span>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
