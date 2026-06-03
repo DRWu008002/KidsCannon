@@ -8,8 +8,15 @@ const turnRightButton = document.getElementById("turnRight");
 
 const WIDTH = canvas.width;
 const HEIGHT = canvas.height;
-const cannon = { x: WIDTH / 2, y: HEIGHT - 22, angle: -Math.PI / 2 };
-const LAUNCHER_LENGTH = 218;
+const BALLOON_ZONE_END = HEIGHT * 0.25;
+const OBSTACLE_ZONE_Y = HEIGHT * 0.34;
+const LAUNCHER_ZONE_START = HEIGHT * 0.8;
+const cannon = {
+  x: WIDTH / 2,
+  y: LAUNCHER_ZONE_START + (HEIGHT - LAUNCHER_ZONE_START) * 0.86,
+  angle: -Math.PI / 2,
+};
+const LAUNCHER_LENGTH = 74;
 const keys = new Set();
 const touchDirections = new Set();
 const balls = [];
@@ -27,7 +34,7 @@ const twinkleStars = Array.from({ length: 22 }, (_, index) => ({
   phase: index * 0.7,
 }));
 const colors = ["#ff7299", "#ffad5b", "#ffd95b", "#75d69c", "#63bee8", "#9d82e7"];
-const wall = { x: WIDTH / 2 - 85, y: 232, width: 170, height: 25, speed: 52 };
+const wall = { x: WIDTH / 2 - 85, y: OBSTACLE_ZONE_Y, width: 170, height: 25, speed: 52 };
 
 let balloon = createBalloon();
 let score = 0;
@@ -46,7 +53,7 @@ function randomColor() {
 function createBalloon() {
   return {
     x: randomBetween(100, WIDTH - 100),
-    y: randomBetween(62, 152),
+    y: randomBetween(42, BALLOON_ZONE_END - 42),
     radius: 39,
     color: randomColor(),
     speed: randomBetween(20, 34) * (Math.random() < 0.5 ? -1 : 1),
@@ -329,98 +336,50 @@ function drawStar(x, y, outerRadius, innerRadius, fill, stroke) {
 }
 
 function drawStarLauncher() {
-  // The fairy wand stays aligned with the projectile direction.
+  // Keep the whole wand inside the bottom 20% zone at every allowed angle.
   ctx.save();
   ctx.translate(cannon.x, cannon.y);
   ctx.rotate(cannon.angle);
 
-  const wandGradient = ctx.createLinearGradient(0, -24, 0, 24);
-  wandGradient.addColorStop(0, "#d5c7ff");
-  wandGradient.addColorStop(0.28, "#9a80ef");
-  wandGradient.addColorStop(0.68, "#6751c9");
-  wandGradient.addColorStop(1, "#4935a6");
-  drawRoundedRectangle(-18, -23, 154, 46, 21, wandGradient, "#44309a");
-
-  ctx.fillStyle = "#ffffff88";
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.strokeStyle = "#4d2b1b";
+  ctx.lineWidth = 12;
   ctx.beginPath();
-  ctx.roundRect(8, -15, 96, 10, 6);
-  ctx.fill();
+  ctx.moveTo(0, 0);
+  ctx.bezierCurveTo(14, 3, 25, -4, 38, 1);
+  ctx.bezierCurveTo(46, 4, 51, -3, 56, 0);
+  ctx.stroke();
 
-  for (const x of [16, 52, 88, 124]) {
-    ctx.strokeStyle = "#b6a4ff";
-    ctx.lineWidth = 6;
+  ctx.strokeStyle = "#815036";
+  ctx.lineWidth = 6;
+  ctx.beginPath();
+  ctx.moveTo(1, -3);
+  ctx.bezierCurveTo(15, -1, 25, -7, 38, -2);
+  ctx.bezierCurveTo(45, 1, 50, -5, 55, -2);
+  ctx.stroke();
+
+  ctx.strokeStyle = "#c18a5f";
+  ctx.lineWidth = 2;
+  for (const x of [14, 28, 42]) {
     ctx.beginPath();
-    ctx.moveTo(x - 8, -20);
-    ctx.lineTo(x + 8, 20);
+    ctx.arc(x, 0, 5, -0.85 * Math.PI, 0.85 * Math.PI);
     ctx.stroke();
   }
 
-  ctx.fillStyle = "#7edcff";
-  ctx.strokeStyle = "#367bd0";
-  ctx.lineWidth = 5;
+  ctx.fillStyle = "#442416";
   ctx.beginPath();
-  ctx.arc(136, 0, 28, 0, Math.PI * 2);
+  ctx.ellipse(25, 1, 4, 3, 0.2, 0, Math.PI * 2);
   ctx.fill();
-  ctx.stroke();
 
   ctx.save();
   ctx.shadowColor = "#ffe778";
-  ctx.shadowBlur = 30;
-  drawStar(164, 0, 54, 27, "#ffd83d", "#e99a18");
+  ctx.shadowBlur = 15;
+  drawStar(58, 0, 16, 8, "#ffd83d", "#e99a18");
   ctx.restore();
-  drawStar(164, 0, 43, 21, "#ffed71", "#f4b51f");
-  drawStar(151, -15, 12, 6, "#ffffffaa");
-
-  for (const [x, y, size] of [[36, 34, 8], [88, -34, 7], [125, 35, 6]]) {
-    ctx.save();
-    ctx.shadowColor = "#fff3a2";
-    ctx.shadowBlur = 12;
-    drawStar(x, y, size, size * 0.48, "#fff09a");
-    ctx.restore();
-  }
+  drawStar(58, 0, 12, 6, "#ffef82", "#f1b220");
+  drawStar(54, -5, 4, 2, "#ffffffaa");
   ctx.restore();
-
-  const bodyGradient = ctx.createLinearGradient(0, cannon.y - 48, 0, cannon.y + 35);
-  bodyGradient.addColorStop(0, "#ff6ca6");
-  bodyGradient.addColorStop(1, "#e52b78");
-  drawRoundedRectangle(cannon.x - 85, cannon.y - 42, 170, 78, 31, bodyGradient, "#b91d64");
-
-  ctx.fillStyle = "#ff9ac0";
-  ctx.beginPath();
-  ctx.roundRect(cannon.x - 65, cannon.y - 31, 103, 13, 7);
-  ctx.fill();
-
-  for (const wheelX of [cannon.x - 83, cannon.x + 83]) {
-    ctx.fillStyle = "#ffc83d";
-    ctx.strokeStyle = "#e99718";
-    ctx.lineWidth = 5;
-    ctx.beginPath();
-    ctx.arc(wheelX, cannon.y + 5, 36, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = "#ffdf70";
-    ctx.beginPath();
-    ctx.arc(wheelX - 9, cannon.y - 7, 10, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = "#2d8fe7";
-    ctx.strokeStyle = "#1263b8";
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.arc(wheelX, cannon.y + 5, 17, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-  }
-
-  ctx.fillStyle = "#1689e6";
-  ctx.strokeStyle = "#0f5eaf";
-  ctx.lineWidth = 5;
-  ctx.beginPath();
-  ctx.arc(cannon.x, cannon.y + 1, 42, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.stroke();
-  drawStar(cannon.x, cannon.y + 1, 28, 14, "#ffdd4f", "#e99c16");
 }
 
 function drawBalls() {
